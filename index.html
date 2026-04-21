@@ -1,0 +1,91 @@
+// --- Data ---
+const scenarios = [
+  { text: "Competitors release a model with better features. You're losing market share!", impact: { innovate: [0, 3], "lower price": [2, 0], market: [1, 0], "speed up": [0, 1] }},
+  { text: "Competitors lower their prices. Customers are flocking to them for the deals.", impact: { innovate: [0, 2], "lower price": [3, 0], market: [1, 0], "speed up": [1, 0] }},
+  { text: "Consumers complain about some of your product features. Your brand image is slipping.", impact: { innovate: [0, 4], "lower price": [1, 0], market: [3, 0], "speed up": [-1, 0] }},
+  { text: "One of your competitor's product is trending. You are being forgotten.", impact: { innovate: [1, 2], "lower price": [1, 0], market: [4, 0], "speed up": [0, 1] }},
+  { text: "A new breakthrough technology becomes available due to scientific research.", impact: { innovate: [0, 6], "lower price": [-1, 0], market: [1, 0], "speed up": [0, 2] }}
+];
+
+const costs = { innovate: 3, "lower price": 1, market: 2, "speed up": 2 };
+let stats = { budget: 10, satisfaction: 5, innovativeness: 5 };
+let currentRound = 0;
+
+// --- Logic ---
+function updateDisplay() {
+  document.getElementById('stat-budget').innerText = stats.budget;
+  document.getElementById('stat-sat').innerText = stats.satisfaction;
+  document.getElementById('stat-inn').innerText = stats.innovativeness;
+  document.getElementById('round-title').innerText = "Round " + (currentRound + 1);
+  document.getElementById('scenario-text').innerText = scenarios[currentRound].text;
+
+  if (stats.budget <= 0) {
+    endGame("Bankrupt! You ran out of cash.");
+  }
+}
+
+function processRound() {
+  const selected = Array.from(document.querySelectorAll('.game-check:checked'));
+  
+  if (selected.length < 1 || selected.length > 2) {
+    alert("Select 1 or 2 actions.");
+    return;
+  }
+
+  let log = "";
+  selected.forEach(input => {
+    const act = input.value;
+    stats.budget -= costs[act];
+    stats.satisfaction += scenarios[currentRound].impact[act][0];
+    stats.innovativeness += scenarios[currentRound].impact[act][1];
+
+    if (act === 'innovate') log += "Innovation: Research and Development improved your 'Tech Edge'. ";
+    if (act === 'lower price') log += "Price Cut: This helped your 'Market Accessibility'. ";
+    if (act === 'market') log += "Marketing: This boosted your 'Brand Awareness'. ";
+    if (act === 'speed up') log += "Efficiency: You improved 'Operational Speed'. ";
+  });
+
+  if (stats.budget > 0) {
+    document.getElementById('action-box').style.display = 'none';
+    document.getElementById('feedback-box').style.display = 'block';
+    document.getElementById('feedback-text').innerText = log;
+    document.getElementById('stat-budget').innerText = stats.budget;
+  } else {
+    endGame("Out of Budget! Decisions were too expensive.");
+  }
+}
+
+function nextRound() {
+  currentRound++;
+  if (currentRound >= scenarios.length) {
+    endGame("Market Cycle Finished");
+  } else {
+    document.getElementById('action-box').style.display = 'block';
+    document.getElementById('feedback-box').style.display = 'none';
+    document.querySelectorAll('.game-check').forEach(c => c.checked = false);
+    updateDisplay();
+  }
+}
+
+function endGame(msg) {
+  const score = (stats.budget * 1) + (stats.satisfaction * 2) + (stats.innovativeness * 5);
+  let summary = stats.innovativeness > 15 ? "High-Tech Leader: You disrupted the market." : "Stability Focus: You kept the brand safe but played it safe.";
+  
+  document.getElementById('game-screen').innerHTML = `
+    <div style="text-align:center;">
+      <h2>${msg}</h2>
+      <p>Budget: ${stats.budget} | Sat: ${stats.satisfaction} | Inn: ${stats.innovativeness}</p>
+      <h3 style="color:#27ae60">Final Score: ${score}</h3>
+      <p><em>${summary}</em></p>
+      <button onclick="location.reload()">Restart</button>
+    </div>
+  `;
+}
+
+// --- Run ---
+// Immediate initialization
+updateDisplay();
+
+// Attach listeners
+document.getElementById('submit-btn').addEventListener('click', processRound);
+document.getElementById('next-btn').addEventListener('click', nextRound);
