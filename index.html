@@ -30,14 +30,6 @@
     border-radius: 6px;
     cursor: pointer;
   }
-
-  button:hover {
-    opacity: 0.9;
-  }
-
-  .stat {
-    font-weight: bold;
-  }
 </style>
 </head>
 
@@ -51,9 +43,9 @@
 </div>
 
 <div class="card">
-  <p>💰 Budget: <span id="stat-budget" class="stat"></span></p>
-  <p>❤️ Satisfaction: <span id="stat-sat" class="stat"></span></p>
-  <p>🚀 Innovation: <span id="stat-inn" class="stat"></span></p>
+  <p>💰 Budget: <span id="stat-budget"></span></p>
+  <p>❤️ Satisfaction: <span id="stat-sat"></span></p>
+  <p>🚀 Innovation: <span id="stat-inn"></span></p>
 </div>
 
 <div class="card">
@@ -77,6 +69,7 @@
 </div>
 
 <script>
+
 // ---------------- DATA ----------------
 const scenarios = [
   {
@@ -152,18 +145,18 @@ function submitActions() {
     stats.innovativeness += effect[1];
 
     if (action === "innovate") feedback.push("Innovation improved product quality.");
-    if (action === "lowerPrice") feedback.push("Lower prices increased customer interest.");
-    if (action === "market") feedback.push("Marketing boosted visibility.");
-    if (action === "speedUp") feedback.push("Speed improved operations but may affect quality.");
+    if (action === "lowerPrice") feedback.push("Lower prices increased demand.");
+    if (action === "market") feedback.push("Marketing improved visibility.");
+    if (action === "speedUp") feedback.push("Faster production increased efficiency.");
   });
 
-  // clamp stats
+  // Clamp stats
   stats.budget = Math.max(0, stats.budget);
   stats.satisfaction = Math.max(0, stats.satisfaction);
   stats.innovativeness = Math.max(0, stats.innovativeness);
 
   if (stats.budget <= 0) {
-    endGame("💸 Bankrupt! You ran out of budget.");
+    endGame();
     return;
   }
 
@@ -171,11 +164,12 @@ function submitActions() {
   updateDisplay();
 }
 
+// ---------------- ROUND FLOW ----------------
 function nextRound() {
   currentRound++;
 
   if (currentRound >= scenarios.length) {
-    endGame("🏁 Market cycle completed!");
+    endGame();
     return;
   }
 
@@ -186,34 +180,27 @@ function nextRound() {
 }
 
 // ---------------- END GAME ----------------
-function endGame(message) {
-  let score = stats.satisfaction + stats.innovativeness + stats.budget;
+function endGame() {
 
-  let summary = "";
-
-  if (stats.satisfaction <= 3) {
-    summary = "💀 Outcompeted due to weak customer satisfaction.";
-  } else if (stats.innovativeness >= 8 && stats.satisfaction >= 7) {
-    summary = "🏆 Market Leader with strong innovation and demand.";
-  } else if (stats.innovativeness >= 7) {
-    summary = "⚡ Innovation-focused company with strong tech edge.";
-  } else if (stats.satisfaction >= 7) {
-    summary = "📢 Popular brand but weaker innovation.";
-  } else {
-    summary = "⚙️ Survived but did not dominate the market.";
-  }
+  let score =
+    (stats.budget * 1) +
+    (stats.satisfaction * 2) +
+    (stats.innovativeness * 5);
 
   document.body.innerHTML = `
     <div class="card">
-      <h2>${message}</h2>
-      <p>${summary}</p>
-      <p>Final Stats:</p>
-      <p>💰 ${stats.budget} | ❤️ ${stats.satisfaction} | 🚀 ${stats.innovativeness}</p>
-      <h3>Total Score: ${score}</h3>
+      <h2>🏁 Game Over</h2>
+      <p>💰 Budget: ${stats.budget}</p>
+      <p>❤️ Satisfaction: ${stats.satisfaction}</p>
+      <p>🚀 Innovativeness: ${stats.innovativeness}</p>
+
+      <h3>Final Score: ${score}</h3>
+
       <button onclick="location.reload()">Restart</button>
     </div>
   `;
 }
+
 </script>
 
 </body>
