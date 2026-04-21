@@ -1,1 +1,111 @@
-// --- Data --- const scenarios = [ { text: "Competitors release a model with better features. You're losing market share!", impact: { innovate: [0, 3], "lower price": [2, 0], market: [1, 0], "speed up": [0, 1] }}, { text: "Competitors lower their prices. Customers are flocking to them for the deals.", impact: { innovate: [0, 2], "lower price": [3, 0], market: [1, 0], "speed up": [1, 0] }}, { text: "Consumers complain about some of your product features. Your brand image is slipping.", impact: { innovate: [0, 4], "lower price": [1, 0], market: [3, 0], "speed up": [-1, 0] }}, { text: "One of your competitor's product is trending. You are being forgotten.", impact: { innovate: [1, 2], "lower price": [1, 0], market: [4, 0], "speed up": [0, 1] }}, { text: "A new breakthrough technology becomes available due to scientific research.", impact: { innovate: [0, 6], "lower price": [-1, 0], market: [1, 0], "speed up": [0, 2] }} ]; const costs = { innovate: 3, "lower price": 1, market: 2, "speed up": 2 }; let stats = { budget: 10, satisfaction: 5, innovativeness: 5 }; let currentRound = 0; // --- Logic --- function updateDisplay() { document.getElementById('stat-budget').innerText = stats.budget; document.getElementById('stat-sat').innerText = stats.satisfaction; document.getElementById('stat-inn').innerText = stats.innovativeness; document.getElementById('round-title').innerText = "Round " + (currentRound + 1); document.getElementById('scenario-text').innerText = scenarios[currentRound].text; if (stats.budget <= 0) { endGame("Bankrupt! You ran out of cash."); } } function processRound() { const selected = Array.from(document.querySelectorAll('.game-check:checked')); if (selected.length < 1 || selected.length > 2) { alert("Select 1 or 2 actions."); return; } let log = ""; selected.forEach(input => { const act = input.value; stats.budget -= costs[act]; stats.satisfaction += scenarios[currentRound].impact[act][0]; stats.innovativeness += scenarios[currentRound].impact[act][1]; if (act === 'innovate') log += "Innovation: Research and Development improved your 'Tech Edge'. "; if (act === 'lower price') log += "Price Cut: This helped your 'Market Accessibility'. "; if (act === 'market') log += "Marketing: This boosted your 'Brand Awareness'. "; if (act === 'speed up') log += "Efficiency: You improved 'Operational Speed'. "; }); if (stats.budget > 0) { document.getElementById('action-box').style.display = 'none'; document.getElementById('feedback-box').style.display = 'block'; document.getElementById('feedback-text').innerText = log; document.getElementById('stat-budget').innerText = stats.budget; } else { endGame("Out of Budget! Decisions were too expensive."); } } function nextRound() { currentRound++; if (currentRound >= scenarios.length) { endGame("Market Cycle Finished"); } else { document.getElementById('action-box').style.display = 'block'; document.getElementById('feedback-box').style.display = 'none'; document.querySelectorAll('.game-check').forEach(c => c.checked = false); updateDisplay(); } } function endGame(msg) { const score = (stats.budget * 1) + (stats.satisfaction * 2) + (stats.innovativeness * 5); let summary = stats.innovativeness > 15 ? "High-Tech Leader: You disrupted the market." : "Stability Focus: You kept the brand safe but played it safe."; document.getElementById('game-screen').innerHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Market Master Simulation</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
+        #game-container { background: white; max-width: 500px; width: 100%; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        #stats-bar { background: #333; color: white; padding: 10px; display: flex; justify-content: space-around; margin-bottom: 20px; border-radius: 5px; }
+        .hidden { display: none; }
+        button { width: 100%; padding: 10px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #scenario-box { background: #eef; padding: 15px; border-left: 5px solid #3498db; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Market Master</h1>
+    <div id="stats-bar">
+        <span>Budget: <b id="stat-budget">10</b></span>
+        <span>Sat: <b id="stat-sat">5</b></span>
+        <span>Inn: <b id="stat-inn">5</b></span>
+    </div>
+
+    <div id="game-content">
+        <div id="scenario-box">
+            <h2 id="round-title">Round 1</h2>
+            <p id="scenario-text">Loading...</p>
+        </div>
+
+        <div id="action-box">
+            <p>Choose 1 or 2 actions:</p>
+            <label><input type="checkbox" class="game-check" value="innovate"> Innovate (-3 Budget)</label><br>
+            <label><input type="checkbox" class="game-check" value="lower price"> Lower Price (-1 Budget)</label><br>
+            <label><input type="checkbox" class="game-check" value="market"> Market (-2 Budget)</label><br>
+            <label><input type="checkbox" class="game-check" value="speed up"> Speed Up (-2 Budget)</label><br><br>
+            <button id="submit-btn">Submit Decisions</button>
+        </div>
+
+        <div id="feedback-box" class="hidden">
+            <p id="feedback-text"></p>
+            <button id="next-btn">Next Round</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scenarios = [
+        { text: "Competitors release a model with better features. You're losing market share!", impact: { innovate: [0, 3], "lower price": [2, 0], market: [1, 0], "speed up": [0, 1] }},
+        { text: "Competitors lower their prices. Customers are flocking to them for the deals.", impact: { innovate: [0, 2], "lower price": [3, 0], market: [1, 0], "speed up": [1, 0] }},
+        { text: "Consumers complain about some of your product features. Your brand image is slipping.", impact: { innovate: [0, 4], "lower price": [1, 0], market: [3, 0], "speed up": [-1, 0] }},
+        { text: "One of your competitor's product is trending. You are being forgotten.", impact: { innovate: [1, 2], "lower price": [1, 0], market: [4, 0], "speed up": [0, 1] }},
+        { text: "A new breakthrough technology becomes available due to scientific research.", impact: { innovate: [0, 6], "lower price": [-1, 0], market: [1, 0], "speed up": [0, 2] }}
+    ];
+
+    const costs = { innovate: 3, "lower price": 1, market: 2, "speed up": 2 };
+    let stats = { budget: 10, satisfaction: 5, innovativeness: 5 };
+    let currentRound = 0;
+
+    function updateUI() {
+        document.getElementById('stat-budget').innerText = stats.budget;
+        document.getElementById('stat-sat').innerText = stats.satisfaction;
+        document.getElementById('stat-inn').innerText = stats.innovativeness;
+        document.getElementById('round-title').innerText = "Round " + (currentRound + 1);
+        document.getElementById('scenario-text').innerText = scenarios[currentRound].text;
+        if (stats.budget <= 0) endGame("Bankrupt!");
+    }
+
+    function processRound() {
+        const checked = Array.from(document.querySelectorAll('.game-check:checked'));
+        if (checked.length < 1 || checked.length > 2) { alert("Select 1 or 2!"); return; }
+        
+        checked.forEach(input => {
+            const act = input.value;
+            stats.budget -= costs[act];
+            stats.satisfaction += scenarios[currentRound].impact[act][0];
+            stats.innovativeness += scenarios[currentRound].impact[act][1];
+        });
+
+        if (stats.budget > 0) {
+            document.getElementById('action-box').classList.add('hidden');
+            document.getElementById('feedback-box').classList.remove('hidden');
+            document.getElementById('feedback-text').innerText = "Decisions processed. Your competitive standing has changed.";
+        } else { endGame("Bankrupt!"); }
+        
+        document.getElementById('stat-budget').innerText = stats.budget;
+    }
+
+    function nextRound() {
+        currentRound++;
+        if (currentRound >= scenarios.length) { endGame("Game Over!"); }
+        else {
+            document.getElementById('action-box').classList.remove('hidden');
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.querySelectorAll('.game-check').forEach(c => c.checked = false);
+            updateUI();
+        }
+    }
+
+    function endGame(msg) {
+        const score = (stats.budget * 1) + (stats.satisfaction * 2) + (stats.innovativeness * 5);
+        document.getElementById('game-container').innerHTML = `<h1>${msg}</h1><p>Final Score: ${score}</p><button onclick="location.reload()">Restart</button>`;
+    }
+
+    document.getElementById('submit-btn').onclick = processRound;
+    document.getElementById('next-btn').onclick = nextRound;
+    updateUI();
+</script>
+
+</body>
+</html>
