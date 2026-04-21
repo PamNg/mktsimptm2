@@ -102,14 +102,14 @@ const costs = {
 };
 
 let stats = {
-  budget: 10,
+  budget: 15,
   satisfaction: 5,
   innovativeness: 5
 };
 
 let currentRound = 0;
 
-// ---------------- INIT ----------------
+// ---------------- DISPLAY ----------------
 function updateDisplay() {
   document.getElementById("round-title").innerText = "Round " + (currentRound + 1);
   document.getElementById("scenario-text").innerText = scenarios[currentRound].text;
@@ -123,6 +123,7 @@ updateDisplay();
 
 // ---------------- GAME LOGIC ----------------
 function submitActions() {
+
   let selected = [...document.querySelectorAll("input:checked")];
 
   if (selected.length < 1 || selected.length > 2) {
@@ -147,7 +148,7 @@ function submitActions() {
     if (action === "innovate") feedback.push("Innovation improved product quality.");
     if (action === "lowerPrice") feedback.push("Lower prices increased demand.");
     if (action === "market") feedback.push("Marketing improved visibility.");
-    if (action === "speedUp") feedback.push("Faster production increased efficiency.");
+    if (action === "speedUp") feedback.push("Speed improved efficiency.");
   });
 
   // Clamp stats
@@ -155,17 +156,19 @@ function submitActions() {
   stats.satisfaction = Math.max(0, stats.satisfaction);
   stats.innovativeness = Math.max(0, stats.innovativeness);
 
+  document.getElementById("feedback").innerText = feedback.join(" ");
+
   if (stats.budget <= 0) {
     endGame();
     return;
   }
 
-  document.getElementById("feedback").innerText = feedback.join(" ");
   updateDisplay();
 }
 
 // ---------------- ROUND FLOW ----------------
 function nextRound() {
+
   currentRound++;
 
   if (currentRound >= scenarios.length) {
@@ -187,20 +190,52 @@ function endGame() {
     (stats.satisfaction * 2) +
     (stats.innovativeness * 5);
 
+  // --- EVALUATIVE SUMMARY ---
+  let strengths = [];
+  let weaknesses = [];
+
+  if (stats.innovativeness >= 8) {
+    strengths.push("strong innovation strategy");
+  } else {
+    weaknesses.push("limited investment in innovation");
+  }
+
+  if (stats.satisfaction >= 7) {
+    strengths.push("good customer satisfaction management");
+  } else {
+    weaknesses.push("weak customer satisfaction performance");
+  }
+
+  if (stats.budget > 10) {
+    strengths.push("efficient budget management");
+  } else {
+    weaknesses.push("high spending reduced financial stability");
+  }
+
+  let summary = `
+    <p><b>Strengths:</b> ${strengths.join(", ") || "None clearly demonstrated"}</p>
+    <p><b>Areas for improvement:</b> ${weaknesses.join(", ") || "Well balanced performance"}</p>
+  `;
+
   document.body.innerHTML = `
     <div class="card">
       <h2>🏁 Game Over</h2>
+
       <p>💰 Budget: ${stats.budget}</p>
       <p>❤️ Satisfaction: ${stats.satisfaction}</p>
       <p>🚀 Innovativeness: ${stats.innovativeness}</p>
 
       <h3>Final Score: ${score}</h3>
 
+      <hr>
+
+      <h3>📊 Evaluation</h3>
+      ${summary}
+
       <button onclick="location.reload()">Restart</button>
     </div>
   `;
 }
-
 </script>
 
 </body>
