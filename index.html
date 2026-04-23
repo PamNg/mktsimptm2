@@ -7,133 +7,28 @@
 
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: linear-gradient(180deg, #eef2f7, #f9fbfd);
-    margin: 0;
-    padding: 16px;
-    color: #2c3e50;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
     text-align: center;
-  }
-
-  h1 {
-    font-size: 20px;
-    margin-bottom: 12px;
+    margin: 0;
+    padding: 20px;
   }
 
   .card {
     background: white;
-    padding: 16px;
-    margin: 12px auto;
-    max-width: 520px;
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    text-align: left;
-  }
-
-  /* SCENARIO */
-  .scenario-card {
-    background: #2c3e50;
-    color: white;
-  }
-
-  .round {
-    font-size: 13px;
-    opacity: 0.8;
-  }
-
-  #scenario-text {
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  /* STATS */
-  .stats-card {
-    display: flex;
-    justify-content: space-around;
-    text-align: center;
-  }
-
-  .stat {
-    background: #f1f5f9;
-    padding: 10px;
+    padding: 15px;
+    margin: 10px auto;
+    max-width: 500px;
     border-radius: 10px;
-    font-size: 14px;
-    min-width: 90px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
-  /* ACTION GRID */
-  .actions {
-    display: grid;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .action {
-    display: block;
-    background: #f4f6f8;
-    padding: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 14px;
-  }
-
-  .action:hover {
-    background: #e8eef7;
-  }
-
-  .action input {
-    margin-right: 8px;
-    transform: scale(1.2);
-  }
-
-  /* BUTTONS */
   button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-
-  .primary {
-    background: #2ecc71;
-    color: white;
-  }
-
-  .secondary {
-    background: #3498db;
-    color: white;
-  }
-
-  .danger {
-    background: #e74c3c;
-    color: white;
-  }
-
-  .nav {
-    display: flex;
-    gap: 10px;
-  }
-
-  .nav button {
-    flex: 1;
-  }
-
-  #feedback {
-    background: #f9fafc;
     padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
   }
 </style>
 </head>
@@ -142,53 +37,35 @@
 
 <h1>📱 Market Simulation</h1>
 
-<!-- SCENARIO -->
-<div class="card scenario-card">
-  <div id="round-title" class="round"></div>
+<div class="card">
+  <h2 id="round-title"></h2>
   <p id="scenario-text"></p>
 </div>
 
-<!-- STATS -->
-<div class="card stats-card">
-  <div class="stat">💰 <span id="stat-budget"></span></div>
-  <div class="stat">❤️ <span id="stat-sat"></span></div>
-  <div class="stat">🚀 <span id="stat-inn"></span></div>
+<div class="card">
+  <p>💰 Budget: <span id="stat-budget"></span></p>
+  <p>❤️ Satisfaction: <span id="stat-sat"></span></p>
+  <p>🚀 Innovation: <span id="stat-inn"></span></p>
 </div>
 
-<!-- ACTIONS -->
 <div class="card">
   <h3>Choose Actions (1–2 max)</h3>
 
-  <div class="actions">
-    <label class="action">
-      <input type="checkbox" value="innovate"> ⚙️ Innovate
-    </label>
+  <label><input type="checkbox" value="innovate"> Innovate</label><br>
+  <label><input type="checkbox" value="lowerPrice"> Lower Price</label><br>
+  <label><input type="checkbox" value="market"> Market</label><br>
+  <label><input type="checkbox" value="speedUp"> Speed Up</label><br>
 
-    <label class="action">
-      <input type="checkbox" value="lowerPrice"> 💰 Lower Price
-    </label>
-
-    <label class="action">
-      <input type="checkbox" value="market"> 📢 Market
-    </label>
-
-    <label class="action">
-      <input type="checkbox" value="speedUp"> ⚡ Speed Up
-    </label>
-  </div>
-
-  <button class="primary" onclick="submitActions()">Submit Actions</button>
+  <button onclick="submitActions()">Submit Actions</button>
 </div>
 
-<!-- FEEDBACK -->
 <div class="card">
   <p id="feedback"></p>
 </div>
 
-<!-- NAV -->
-<div class="card nav">
-  <button class="secondary" onclick="nextRound()">Next Round</button>
-  <button class="danger" onclick="endGame()">End Game</button>
+<div class="card">
+  <button onclick="nextRound()">➡ Next Round</button>
+  <button onclick="endGame()">🏁 End Game</button>
 </div>
 
 <script>
@@ -274,6 +151,7 @@ function submitActions() {
     if (action === "speedUp") feedback.push("Speed improved efficiency.");
   });
 
+  // Clamp stats
   stats.budget = Math.max(0, stats.budget);
   stats.satisfaction = Math.max(0, stats.satisfaction);
   stats.innovativeness = Math.max(0, stats.innovativeness);
@@ -312,17 +190,32 @@ function endGame() {
     (stats.satisfaction * 2) +
     (stats.innovativeness * 5);
 
+  // --- EVALUATIVE SUMMARY ---
   let strengths = [];
   let weaknesses = [];
 
-  if (stats.innovativeness >= 8) strengths.push("strong innovation strategy");
-  else weaknesses.push("limited investment in innovation");
+  if (stats.innovativeness >= 8) {
+    strengths.push("strong innovation strategy");
+  } else {
+    weaknesses.push("limited investment in innovation");
+  }
 
-  if (stats.satisfaction >= 7) strengths.push("good customer satisfaction management");
-  else weaknesses.push("weak customer satisfaction performance");
+  if (stats.satisfaction >= 7) {
+    strengths.push("good customer satisfaction management");
+  } else {
+    weaknesses.push("weak customer satisfaction performance");
+  }
 
-  if (stats.budget > 10) strengths.push("efficient budget management");
-  else weaknesses.push("high spending reduced financial stability");
+  if (stats.budget > 10) {
+    strengths.push("efficient budget management");
+  } else {
+    weaknesses.push("high spending reduced financial stability");
+  }
+
+  let summary = `
+    <p><b>Strengths:</b> ${strengths.join(", ") || "None clearly demonstrated"}</p>
+    <p><b>Areas for improvement:</b> ${weaknesses.join(", ") || "Well balanced performance"}</p>
+  `;
 
   document.body.innerHTML = `
     <div class="card">
@@ -337,14 +230,12 @@ function endGame() {
       <hr>
 
       <h3>📊 Evaluation</h3>
-      <p><b>Strengths:</b> ${strengths.join(", ") || "None clearly demonstrated"}</p>
-      <p><b>Areas for improvement:</b> ${weaknesses.join(", ") || "Well balanced performance"}</p>
+      ${summary}
 
       <button onclick="location.reload()">Restart</button>
     </div>
   `;
 }
-
 </script>
 
 </body>
