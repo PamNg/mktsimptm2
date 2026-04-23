@@ -147,7 +147,7 @@ const costs = { innovate: 3, lowerPrice: 1, market: 2, speedUp: 2 };
 
 let stats = { budget: 15, satisfaction: 5, innovativeness: 5 };
 let currentRound = 0;
-let hasSubmitted = false; // 🔴 NEW LOCK
+let hasSubmitted = false;
 
 // ---------------- DISPLAY ----------------
 function updateDisplay() {
@@ -163,7 +163,7 @@ updateDisplay();
 // ---------------- GAME LOGIC ----------------
 function submitActions() {
 
-  if (hasSubmitted) return; // 🔴 BLOCK repeat
+  if (hasSubmitted) return;
 
   let selected = [...document.querySelectorAll("input:checked")];
 
@@ -186,8 +186,8 @@ function submitActions() {
     let action = input.value;
 
     stats.budget -= costs[action];
-
     let effect = scenarios[currentRound].impact[action];
+
     stats.satisfaction += effect[0];
     stats.innovativeness += effect[1];
 
@@ -206,7 +206,7 @@ function submitActions() {
 
   document.getElementById("feedback").innerText = feedback.join(" ");
 
-  hasSubmitted = true; // 🔴 LOCK ROUND
+  hasSubmitted = true;
   document.getElementById("submitBtn").disabled = true;
 
   if (stats.budget <= 0) endGame();
@@ -221,7 +221,7 @@ function nextRound() {
 
   if (currentRound >= scenarios.length) return endGame();
 
-  hasSubmitted = false; // 🔴 UNLOCK
+  hasSubmitted = false;
   document.getElementById("submitBtn").disabled = false;
 
   document.querySelectorAll("input").forEach(i => i.checked = false);
@@ -238,11 +238,34 @@ function endGame() {
     (stats.satisfaction * 2) +
     (stats.innovativeness * 5);
 
+  let strengths = [];
+  let weaknesses = [];
+
+  if (stats.innovativeness >= 8) strengths.push("strong innovation strategy");
+  else weaknesses.push("limited investment in innovation");
+
+  if (stats.satisfaction >= 7) strengths.push("good customer satisfaction management");
+  else weaknesses.push("weak customer satisfaction performance");
+
+  if (stats.budget > 10) strengths.push("efficient budget management");
+  else weaknesses.push("high spending reduced financial stability");
+
   document.body.innerHTML = `
     <div class="card">
       <h2>🏁 Game Over</h2>
-      <p>💰 ${stats.budget} | ❤️ ${stats.satisfaction} | 🚀 ${stats.innovativeness}</p>
+
+      <p>💰 Budget: ${stats.budget}</p>
+      <p>❤️ Satisfaction: ${stats.satisfaction}</p>
+      <p>🚀 Innovativeness: ${stats.innovativeness}</p>
+
       <h3>Final Score: ${score}</h3>
+
+      <hr>
+
+      <h3>📊 Evaluation</h3>
+      <p><b>Strengths:</b> ${strengths.join(", ") || "None clearly demonstrated"}</p>
+      <p><b>Areas for improvement:</b> ${weaknesses.join(", ") || "Well balanced performance"}</p>
+
       <button onclick="location.reload()">Restart</button>
     </div>
   `;
